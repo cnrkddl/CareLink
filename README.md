@@ -84,13 +84,17 @@ AIchatbotProject/
 │   ├── auth_kakao.py        # 카카오 OAuth 인증
 │   ├── database.py          # SQLite DB 매니저
 │   ├── ocr_records.py       # PDF OCR 파싱 (간호기록지)
-│   └── uploads/             # 환자 PDF 파일
+│   └── uploads/             # 환자 PDF 파일 (gitignore 처리 - 아래 참고)
 └── frontend/
     └── src/
         ├── pages/           # LoginPage, HomePage, ChatBotPage, PatientInfoPage, FeedbackPage
         ├── components/      # Header, FAQModal, PatientHistoryCard 등
         └── context/         # 전역 상태 관리
 ```
+
+> [!NOTE]
+> **`backend/uploads/` 폴더는 `.gitignore`에 의해 GitHub에 업로드되지 않습니다.**
+> 해당 폴더에는 실제 환자의 간호기록지 PDF가 포함되어 있으며, 환자 개인정보 보호를 위해 의도적으로 제외 처리하였습니다.
 
 ---
 
