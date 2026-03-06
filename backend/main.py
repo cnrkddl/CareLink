@@ -89,6 +89,14 @@ class FeedbackRequest(BaseModel):
 # ==============================
 # 공용
 # ==============================
+
+def get_current_user_email(request: Request) -> str:
+    """쿠키(k_email)에서 로그인된 사용자 이메일을 꺼냄. 없으면 401."""
+    email = request.cookies.get("k_email", "").strip()
+    if not email:
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+    return email
+
 @app.get("/health")
 def health():
     return {"status": "ok", "time": datetime.now().isoformat()}
@@ -201,7 +209,7 @@ def get_nursing_notes(patient_id: str):
 # 피드백 저장
 # ==============================
 @app.post("/feedback")
-def save_feedback(req: FeedbackRequest):
+def save_feedback(req: FeedbackRequest, request: Request):
     """
     피드백 저장 API
     
@@ -224,8 +232,7 @@ def save_feedback(req: FeedbackRequest):
             raise HTTPException(status_code=400, detail="의견을 입력해주세요")
         
         # 현재 로그인한 사용자 이메일 가져오기 (쿠키에서)
-        # 실제 구현에서는 인증된 사용자 정보를 사용해야 함
-        user_email = "jiminxkey@naver.com"  # 임시로 하드코딩, 나중에 수정 필요
+        user_email = get_current_user_email(request)
         
         # 데이터베이스에 피드백 저장
         feedback_id = db_manager.save_feedback(
@@ -303,8 +310,7 @@ def get_my_patients(request: Request):
     """
     try:
         # 현재 로그인한 사용자 이메일 가져오기 (쿠키에서)
-        # 실제 구현에서는 인증된 사용자 정보를 사용해야 함
-        user_email = "jiminxkey@naver.com"  # 임시로 하드코딩, 나중에 수정 필요
+        user_email = get_current_user_email(request)
         
         patients = db_manager.get_user_patients(user_email)
         return {"ok": True, "patients": patients}
@@ -330,7 +336,7 @@ async def add_patient(request: Request):
     """
     try:
         # 현재 로그인한 사용자 이메일 가져오기
-        user_email = "jiminxkey@naver.com"  # 임시로 하드코딩
+        user_email = get_current_user_email(request)
         
         # 요청 본문 파싱
         body = await request.json()
