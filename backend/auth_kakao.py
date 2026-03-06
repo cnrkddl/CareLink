@@ -150,8 +150,21 @@ def unlink_get(request: Request):
 @router.get("/whoami")
 def whoami(request: Request):
     at = request.cookies.get("k_at")
+    email_cookie = request.cookies.get("k_email")
+    
+    # 📌 데모 로그인 사용자 체크 (k_email만 존재)
+    if not at and email_cookie == "demo@carelink.com":
+        return JSONResponse({
+            "logged_in": True,
+            "id": "demo-user-id",
+            "email": "demo@carelink.com",
+            "nickname": "데모 사용자",
+            "profile_image": None,
+        })
+        
     if not at:
         return JSONResponse({"logged_in": False})
+        
     import requests as rq
     r = rq.get(f"{KAKAO_API_BASE}/v2/user/me",
                headers={"Authorization": f"Bearer {at}"}, timeout=8)
