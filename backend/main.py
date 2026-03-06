@@ -106,6 +106,25 @@ def root():
     front = os.getenv("FRONTEND_REDIRECT_URL", "http://localhost:3000/")
     return RedirectResponse(front)
 
+@app.get("/auth/demo/login")
+async def demo_login():
+    """
+    포트폴리오 평가자 등을 위한 데모 로그인 라우트 (카카오 우회)
+    가상 계정 쿠키를 발급하여 프론트엔드로 리다이렉트합니다.
+    """
+    FRONTEND_REDIRECT_URL = os.getenv("FRONTEND_REDIRECT_URL", "http://localhost:3000")
+    response = RedirectResponse(url=f"{FRONTEND_REDIRECT_URL}?login=success")
+    # 데모 사용자용 쿠키 굽기 (인증 통과용)
+    response.set_cookie(
+        key="k_email",
+        value="demo@carelink.com",
+        httponly=True,
+        secure=os.getenv("COOKIE_SECURE", "false").lower() == "true",
+        samesite=os.getenv("COOKIE_SAMESITE", "lax"),
+        max_age=60 * 60 * 24
+    )
+    return response
+
 # ==============================
 # 챗봇
 # ==============================
