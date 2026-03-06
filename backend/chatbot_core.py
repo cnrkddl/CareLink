@@ -182,9 +182,14 @@ prompt = ChatPromptTemplate.from_messages([
 
 
 memory_store = {}
+MAX_SESSIONS = 100  # 메모리 누수 방지: 최대 세션 수 제한
 
 def get_session_history(session_id: str):
+    # 세션 수가 한도를 초과하면 가장 오래된 세션 삭제
     if session_id not in memory_store:
+        if len(memory_store) >= MAX_SESSIONS:
+            oldest_key = next(iter(memory_store))
+            del memory_store[oldest_key]
         memory_store[session_id] = ConversationBufferMemory(return_messages=True)
     return memory_store[session_id].chat_memory
 
