@@ -1,0 +1,41 @@
+# 이전 git 히스토리 백업 (업로드 제외)
+.git.backup*/
+
+# node / frontend 관련
+node_modules/
+frontend/node_modules/
+frontend/build/
+
+# Python 가상환경
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+backend/__pycache__/
+
+# 빌드 결과물
+dist/
+build/
+
+# 로그
+*.log
+
+# 환경변수 (API Key 등 민감정보)
+.env
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# macOS 시스템 파일
+.DS_Store
+
+# 환자 개인정보 PDF
+backend/uploads/
+
+# DB 파일
+*.db
+backend/chat_logs/
+backend/feedback/
+
+# Poetry
+backend/poetry.lock
