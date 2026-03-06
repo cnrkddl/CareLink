@@ -1,9 +1,9 @@
 [project]
-name = "lolo2"
+name = "carelink"
 version = "0.1.0"
-description = ""
+description = "요양병원 보호자 상담 AI 챗봇 및 간호기록 OCR 분석 서비스"
 authors = [
-    {name = "han2650",email = "wonhee2648@naver.com"}
+    {name = "cnrkddl", email = "jiminxkey@naver.com"}
 ]
 requires-python = ">=3.10,<3.11"
 dependencies = [
