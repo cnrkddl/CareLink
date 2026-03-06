@@ -15,7 +15,7 @@ const HomePage = () => {
     // 카카오 닉네임을 우선적으로 가져오기
     const kakaoNickname = localStorage.getItem("kakao_nickname");
     const storedNickname = localStorage.getItem("nickname");
-    
+
     if (kakaoNickname) {
       setNickname(kakaoNickname);
     } else if (storedNickname) {
@@ -31,7 +31,12 @@ const HomePage = () => {
       const response = await fetch(`${API_BASE}/my-patients`, {
         credentials: 'include',
       });
-      
+
+      if (response.status === 401) {
+        window.location.href = "/";
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         if (data.ok) {
@@ -57,11 +62,11 @@ const HomePage = () => {
 
         {/* 사용자의 환자 정보 표시 */}
         {!loading && userPatients.length > 0 && (
-          <div style={styles.patientSection}>
+          <div className="glass-card" style={styles.patientSection}>
             <h3 style={styles.patientTitle}>내 환자 정보</h3>
             <div style={styles.patientCards}>
               {userPatients.map((patient, index) => (
-                <div key={index} style={styles.patientCard}>
+                <div key={index} className="glass-card" style={styles.patientCard}>
                   <div style={styles.patientHeader}>
                     <h4 style={styles.patientName}>{patient.patient_name}</h4>
                     <span style={styles.relationship}>{patient.relationship}</span>
@@ -88,19 +93,18 @@ const HomePage = () => {
         )}
 
         <div style={styles.cardContainer}>
-          <div style={styles.card}>
-  <div>
-    <h3 style={{ ...styles.cardTitle, margin: '0 0 2px 0' }}>대표번호</h3>
-    <p style={{ ...styles.cardText, margin: 0, marginBottom: '18px' }}>031-919-0041</p> {/* 여기 marginBottom 키포인트 */}
-  </div>
-  <div>
-    <h3 style={{ ...styles.cardTitle, margin: '0 0 2px 0' }}>입원상담</h3>
-    <p style={{ ...styles.cardText, margin: 0 }}>010-4130-0041</p>
-  </div>
-</div>
+          <div className="glass-card" style={styles.card}>
+            <div>
+              <h3 style={{ ...styles.cardTitle, margin: '0 0 4px 0' }}>대표번호</h3>
+              <p style={{ ...styles.cardText, margin: 0, marginBottom: '24px' }}>031-919-0041</p>
+            </div>
+            <div>
+              <h3 style={{ ...styles.cardTitle, margin: '0 0 4px 0' }}>입원상담</h3>
+              <p style={{ ...styles.cardText, margin: 0 }}>010-4130-0041</p>
+            </div>
+          </div>
 
-
-          <div style={styles.card}>
+          <div className="glass-card" style={styles.card}>
             <h3 style={styles.cardTitle}>외래 진료시간 안내</h3>
             <p style={styles.cardText}>
               평일 08:30 ~ 17:30<br />
@@ -113,23 +117,26 @@ const HomePage = () => {
           <div
             style={styles.menuCard}
             onClick={() => navigate('/chat')}
-            className="menu-btn"
+            className="menu-btn glass-card"
           >
-            💬 챗봇 질문하기
+            <div style={styles.menuIcon}>💬</div>
+            <span>챗봇 질문하기</span>
           </div>
           <div
             style={styles.menuCard}
             onClick={() => navigate('/patient-info')}
-            className="menu-btn"
+            className="menu-btn glass-card"
           >
-            🧑‍⚕️ 환자 상태 보기
+            <div style={styles.menuIcon}>🧑‍⚕️</div>
+            <span>환자 상태 보기</span>
           </div>
           <div
             style={styles.menuCard}
             onClick={() => navigate('/feedback')}
-            className="menu-btn"
+            className="menu-btn glass-card"
           >
-            📝 고객 평가 남기기
+            <div style={styles.menuIcon}>📝</div>
+            <span>고객 평가 남기기</span>
           </div>
         </div>
       </main>
@@ -175,170 +182,160 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed',
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    fontFamily: "'Noto Sans KR', sans-serif",
+    fontFamily: "var(--font-family)",
+    position: 'relative',
   },
   main: {
     maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '40px 20px',
+    margin: '40px auto',
+    padding: '48px 32px',
     textAlign: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: '12px',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backdropFilter: 'blur(20px)',
+    borderRadius: '24px',
+    boxShadow: 'var(--shadow-lg)',
+    animation: 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+    position: 'relative',
+    zIndex: 1,
   },
   mainTitle: {
-    fontSize: '32px',
-    color: '#005BAC',
-    fontWeight: 'bold',
-    marginBottom: '10px',
+    fontSize: '2.4rem',
+    color: 'var(--primary-color)',
+    fontWeight: '800',
+    marginBottom: '12px',
     lineHeight: '1.4',
+    letterSpacing: '-0.5px',
   },
   description: {
-    fontSize: '16px',
-    color: '#333',
-    marginBottom: '40px',
+    fontSize: '1.15rem',
+    color: 'var(--text-muted)',
+    marginBottom: '48px',
+    fontWeight: '500',
   },
   cardContainer: {
     display: 'flex',
-    gap: '20px',
+    gap: '24px',
     justifyContent: 'center',
-    marginBottom: '40px',
+    marginBottom: '48px',
     flexWrap: 'wrap',
   },
   card: {
-    background: '#fff',
-    borderRadius: '12px',
-    padding: '20px',
-    minWidth: '300px',
+    padding: '32px 24px',
+    minWidth: '320px',
     flex: 1,
-    minHeight: '180px',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+    minHeight: '200px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    border: 'none',
   },
   cardTitle: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: '4px',
+    fontSize: '1.1rem',
+    fontWeight: '700',
+    color: 'var(--primary-color)',
+    marginBottom: '8px',
   },
   cardText: {
-    fontSize: '16px',
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: '6px',
-  },
-  cardSubText: {
-    fontSize: '14px',
-    color: '#555',
-    marginTop: '4px',
+    fontSize: '1.25rem',
+    fontWeight: '600',
+    color: 'var(--text-main)',
+    marginBottom: '8px',
+    lineHeight: '1.6',
   },
   menuCardContainer: {
     display: 'flex',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    gap: '16px',
-    marginTop: '40px',
+    gap: '20px',
+    marginTop: '20px',
   },
   menuCard: {
-    background: '#fff',
-    border: '1px solid #ccc',
-    borderRadius: '10px',
-    padding: '16px 24px',
-    fontSize: '16px',
-    fontWeight: '500',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    padding: '24px 32px',
+    fontSize: '1.15rem',
+    fontWeight: '600',
+    color: 'var(--text-main)',
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+    border: 'none',
+    minWidth: '220px',
+    borderRadius: '20px',
   },
-  // 📍 주소 푸터 (항상 아래에 위치)
+  menuIcon: {
+    fontSize: '2rem',
+    marginBottom: '8px',
+  },
   footer: {
     textAlign: 'center',
-    padding: '16px 0',
-    color: '#f1f1f1',
+    padding: '24px 0',
+    color: '#ffffff',
     fontSize: '14px',
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    fontWeight: '500',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    backdropFilter: 'blur(10px)',
     marginTop: 'auto',
+    position: 'relative',
+    zIndex: 1,
   },
   patientSection: {
-    marginBottom: '30px',
-    padding: '20px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '16px',
-    border: '1px solid #e9ecef',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+    marginBottom: '40px',
+    padding: '32px',
+    border: 'none',
   },
   patientTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginBottom: '20px',
+    fontSize: '1.4rem',
+    fontWeight: '700',
+    color: 'var(--text-main)',
+    marginBottom: '24px',
     textAlign: 'center',
-    position: 'relative'
   },
   patientCards: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '20px'
+    gap: '24px'
   },
   patientCard: {
-    backgroundColor: 'white',
-    borderRadius: '16px',
     padding: '24px',
-    border: '1px solid #e9ecef',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-    transition: 'all 0.3s ease',
-    position: 'relative',
-    overflow: 'hidden'
+    border: 'none',
+    textAlign: 'left',
   },
   patientHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '16px',
-    paddingBottom: '12px',
-    borderBottom: '2px solid #f1f3f4'
+    paddingBottom: '16px',
+    borderBottom: '1px solid rgba(0,0,0,0.08)'
   },
   patientName: {
-    fontSize: '18px',
-    fontWeight: '600',
-    color: '#2c3e50',
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: 'var(--text-main)',
     margin: '0'
   },
   relationship: {
-    backgroundColor: '#3498db',
+    background: 'var(--primary-gradient)',
     color: 'white',
-    padding: '6px 12px',
+    padding: '6px 14px',
     borderRadius: '20px',
-    fontSize: '12px',
-    fontWeight: '500',
-    textTransform: 'uppercase',
+    fontSize: '0.8rem',
+    fontWeight: '700',
     letterSpacing: '0.5px'
   },
-  patientInfo: {
-    marginBottom: '16px'
-  },
   patientDetail: {
-    fontSize: '14px',
-    color: '#5a6c7d',
-    margin: '8px 0',
+    fontSize: '0.95rem',
+    color: 'var(--text-muted)',
+    margin: '10px 0',
     display: 'flex',
     alignItems: 'center',
     gap: '8px'
-  },
-  viewPatientBtn: {
-    background: '#005BAC',
-    color: '#fff',
-    padding: '8px 15px',
-    borderRadius: '8px',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '500',
-    transition: 'background-color 0.2s ease',
   },
 };
 

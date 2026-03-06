@@ -31,15 +31,15 @@ export default function PatientInfoPage() {
           'Authorization': `Bearer ${token}`
         }
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.properties && data.properties.nickname) {
-          setKakaoNickname(data.properties.nickname);
-        }
-      })
-      .catch(error => {
-        console.error('카카오 사용자 정보 가져오기 실패:', error);
-      });
+        .then(response => response.json())
+        .then(data => {
+          if (data.properties && data.properties.nickname) {
+            setKakaoNickname(data.properties.nickname);
+          }
+        })
+        .catch(error => {
+          console.error('카카오 사용자 정보 가져오기 실패:', error);
+        });
     }
   }, []);
 
@@ -68,7 +68,15 @@ export default function PatientInfoPage() {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`${API_BASE}/patients/${patientId}/nursing-notes`);
+        const res = await fetch(`${API_BASE}/patients/${patientId}/nursing-notes`, {
+          credentials: 'include',
+        });
+
+        if (res.status === 401) {
+          window.location.href = "/";
+          return;
+        }
+
         if (!res.ok) {
           const { detail } = await res.json().catch(() => ({ detail: res.statusText }));
           throw new Error(detail || `API Error ${res.status}`);
@@ -340,67 +348,74 @@ function Badge({ text, color = "#64748b", onClick, isActive = false }) {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "#f8fafc",
+    background: "transparent",
   },
   container: {
     maxWidth: 1100,
     margin: "0 auto",
     padding: "20px 16px 48px",
+    animation: "fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
   },
   topBar: {
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "space-between",
     gap: 16,
-    margin: "12px 0 20px",
+    margin: "12px 0 24px",
     flexWrap: "wrap",
   },
   titleWrap: { maxWidth: 640 },
-  title: { margin: 0, fontSize: 24, fontWeight: 800, color: "#0f172a" },
-  subtitle: { margin: "6px 0 0", color: "#475569" },
+  title: { margin: 0, fontSize: "1.8rem", fontWeight: 800, color: "var(--primary-color)", letterSpacing: "-0.5px" },
+  subtitle: { margin: "8px 0 0", color: "var(--text-muted)", fontSize: "1.05rem" },
   controls: { display: "flex", gap: 12, flexWrap: "wrap" },
-  label: { display: "flex", flexDirection: "column", fontSize: 13, color: "#334155" },
+  label: { display: "flex", flexDirection: "column", fontSize: 13, color: "var(--text-main)", fontWeight: "600" },
   input: {
-    height: 38,
-    border: "1px solid #e5e7eb",
-    borderRadius: 10,
-    padding: "0 12px",
+    height: 42,
+    border: "1px solid rgba(0,0,0,0.1)",
+    borderRadius: 12,
+    padding: "0 14px",
     minWidth: 180,
     outline: "none",
-    background: "#fff",
+    background: "var(--surface-color)",
+    backdropFilter: "var(--surface-blur)",
+    transition: "border-color 0.2s, box-shadow 0.2s",
   },
   select: {
-    height: 38,
-    border: "1px solid #e5e7eb",
-    borderRadius: 10,
-    padding: "0 12px",
+    height: 42,
+    border: "1px solid rgba(0,0,0,0.1)",
+    borderRadius: 12,
+    padding: "0 14px",
     minWidth: 160,
     outline: "none",
-    background: "#fff",
+    background: "var(--surface-color)",
+    backdropFilter: "var(--surface-blur)",
   },
   stateBox: {
-    background: "#fff",
-    border: "1px dashed #e5e7eb",
-    borderRadius: 14,
-    padding: 18,
+    background: "var(--surface-color)",
+    backdropFilter: "var(--surface-blur)",
+    border: "1px dashed rgba(0,0,0,0.2)",
+    borderRadius: 16,
+    padding: 24,
     textAlign: "center",
-    color: "#334155",
+    color: "var(--text-muted)",
+    fontSize: "1.1rem",
   },
   cardsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: 12,
+    gap: 16,
     marginTop: 8,
   },
   card: {
-    background: "#fff",
-    border: "1px solid #e5e7eb",
-    borderRadius: 16,
-    padding: 16,
-    boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+    background: "var(--surface-color)",
+    backdropFilter: "var(--surface-blur)",
+    border: "1px solid rgba(255,255,255,0.5)",
+    borderRadius: 20,
+    padding: 20,
+    boxShadow: "var(--shadow-sm)",
   },
-  cardTitle: { fontSize: 12, color: "#6b7280", marginBottom: 6 },
-  cardValue: { fontSize: 22, fontWeight: 800, color: "#0f172a" },
+  cardTitle: { fontSize: "0.95rem", color: "var(--text-muted)", marginBottom: 8, fontWeight: "600" },
+  cardValue: { fontSize: "1.75rem", fontWeight: 800, color: "var(--text-main)" },
   section: { marginTop: 28 },
 
   // 섹션 타이틀 + 우측 검색창 정렬

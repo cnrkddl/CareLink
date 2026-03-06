@@ -51,7 +51,7 @@ export default function LoginPage() {
         <div style={styles.circle3}></div>
       </div>
 
-      <div style={styles.card}>
+      <div className="glass-card" style={styles.card}>
         <div style={styles.logoContainer}>
           <img
             src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Flh3.googleusercontent.com%2FvIEP7BRkOXpvJCTKH6c_zs78w2CfZer0fSrkkBN_zhYr4WF9o9H5ffJ23IGisjW45w%3Dh500&type=sc960_832"
@@ -61,43 +61,43 @@ export default function LoginPage() {
         </div>
 
         <div style={styles.content}>
-          <h1 style={styles.title}>효림요양병원</h1>
+          <h1 className="gradient-text" style={styles.title}>효림요양병원</h1>
           <h2 style={styles.subtitle}>AI 챗봇 서비스</h2>
           <p style={styles.description}>
-            환자 상태 확인부터 상담까지<br />
-            언제든 편리하게 이용하세요
+            환자 상태 확인부터 간편한 챗봇 상담까지<br />
+            보호자님을 위해 항상 열려있습니다.
           </p>
 
           <button
             onClick={handleKakaoLogin}
-            style={{ ...styles.kakaoBtn, opacity: loading ? 0.7 : 1, pointerEvents: loading ? "none" : "auto" }}
+            style={styles.kakaoBtn}
             disabled={loading}
           >
             {loading ? (
               <div style={styles.loadingContent}>
                 <div style={styles.spinner}></div>
-                <span>카카오 연결 중...</span>
+                <span>연결 중...</span>
               </div>
             ) : (
               <div style={styles.btnContent}>
                 <span style={styles.kakaoIcon}>💬</span>
-                <span>카카오로 시작하기</span>
+                <span>카카오로 3초만에 시작하기</span>
               </div>
             )}
           </button>
 
           <div style={styles.features}>
             <div style={styles.feature}>
-              <span style={styles.featureIcon}>🔒</span>
-              <span>안전한 인증</span>
+              <div style={styles.featureIconWrap}>🔒</div>
+              <span style={styles.featureText}>안전한 인증</span>
             </div>
             <div style={styles.feature}>
-              <span style={styles.featureIcon}>😊</span>
-              <span>친절한 응답</span>
+              <div style={styles.featureIconWrap}>😊</div>
+              <span style={styles.featureText}>따뜻한 상담</span>
             </div>
             <div style={styles.feature}>
-              <span style={styles.featureIcon}>📱</span>
-              <span>쉬운 사용</span>
+              <div style={styles.featureIconWrap}>⚡</div>
+              <span style={styles.featureText}>실시간 확인</span>
             </div>
           </div>
         </div>
@@ -105,16 +105,13 @@ export default function LoginPage() {
 
       <style>
         {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+          .card-anim { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+          button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(254, 229, 0, 0.4);
           }
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-          }
-          .card {
-            animation: float 3s ease-in-out infinite;
+          button:not(:disabled):active {
+            transform: translateY(1px);
           }
         `}
       </style>
@@ -128,9 +125,9 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "#f7f7f9",
     padding: 24,
-    paddingTop: "5vh",
+    position: "relative",
+    overflow: "hidden",
   },
   backgroundDecoration: {
     position: "absolute",
@@ -138,34 +135,40 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    overflow: "hidden",
     zIndex: -1,
   },
-  circle1: { position: "absolute", width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.1)", top: -50, left: -100 },
-  circle2: { position: "absolute", width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.08)", bottom: 100, right: 100 },
-  circle3: { position: "absolute", width: 150, height: 150, borderRadius: "50%", background: "rgba(255,255,255,0.05)", top: 300, left: "50%", transform: "translateX(-50%)" },
+  circle1: { position: "absolute", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(75,110,245,0.15) 0%, rgba(255,255,255,0) 70%)", top: "-10%", left: "-10%", animation: "float 6s ease-in-out infinite" },
+  circle2: { position: "absolute", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(75,110,245,0.1) 0%, rgba(255,255,255,0) 70%)", bottom: "5%", right: "-5%", animation: "float 8s ease-in-out infinite reverse" },
+  circle3: { position: "absolute", width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(58,91,224,0.08) 0%, rgba(255,255,255,0) 70%)", top: "40%", left: "60%", animation: "float 5s ease-in-out infinite 1s" },
   card: {
-    width: 360,
-    background: "#fff",
-    borderRadius: 16,
-    boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-    padding: 20,
-    position: "relative",
+    width: "100%",
+    maxWidth: 400,
+    padding: "48px 32px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     zIndex: 1,
-    textAlign: "center",
+    animation: "fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
   },
-  logoContainer: { textAlign: "center", marginBottom: 8 },
-  logo: { width: 80, height: 80, objectFit: "contain" },
-  content: { textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", marginTop: -5 },
-  title: { fontSize: "2.2rem", fontWeight: 700, marginBottom: 4, color: "#333", textAlign: "center", width: "100%" },
-  subtitle: { fontSize: "1.1rem", color: "#666", marginBottom: 8, textAlign: "center", width: "100%" },
-  description: { fontSize: "0.85rem", color: "#999", marginBottom: 20, lineHeight: 1.5, textAlign: "center", width: "100%" },
-  kakaoBtn: { width: "100%", height: 44, borderRadius: 10, border: "1px solid #FEE500", background: "#FEE500", fontWeight: 700, cursor: "pointer", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 },
-  loadingContent: { display: "flex", alignItems: "center", gap: 8 },
-  spinner: { border: "2px solid #f3f3f3", borderTop: "2px solid #FEE500", borderRadius: "50%", width: 18, height: 18, animation: "spin 1s linear infinite" },
+  logoContainer: { textAlign: "center", marginBottom: 16 },
+  logo: { width: 90, height: 90, objectFit: "contain", dropShadow: "0 8px 16px rgba(0,0,0,0.1)" },
+  content: { width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" },
+  title: { fontSize: "2.5rem", fontWeight: 800, marginBottom: 8, letterSpacing: "-0.5px" },
+  subtitle: { fontSize: "1.2rem", color: "#4B6EF5", fontWeight: 600, marginBottom: 16 },
+  description: { fontSize: "0.95rem", color: "#718096", marginBottom: 32, lineHeight: 1.6 },
+  kakaoBtn: {
+    width: "100%", height: 52, borderRadius: 14, border: "none", background: "#FEE500",
+    color: "#000000", fontWeight: 700, fontSize: "16px", cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+    boxShadow: "0 4px 12px rgba(254, 229, 0, 0.2)",
+    transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+  },
+  loadingContent: { display: "flex", alignItems: "center", gap: 10 },
+  spinner: { border: "3px solid rgba(0,0,0,0.1)", borderTop: "3px solid #000", borderRadius: "50%", width: 20, height: 20, animation: "spin 1s linear infinite" },
   btnContent: { display: "flex", alignItems: "center", gap: 8 },
-  kakaoIcon: { fontSize: "1.2rem" },
-  features: { display: "flex", justifyContent: "space-around", marginTop: 15, padding: "0 10px" },
-  feature: { display: "flex", alignItems: "center", gap: 8, color: "#666" },
-  featureIcon: { fontSize: "1rem" },
+  kakaoIcon: { fontSize: "1.3rem" },
+  features: { display: "flex", justifyContent: "space-between", width: "100%", marginTop: 40, padding: "0 10px" },
+  feature: { display: "flex", flexDirection: "column", alignItems: "center", gap: 8 },
+  featureIconWrap: { width: 40, height: 40, borderRadius: 12, background: "rgba(75, 110, 245, 0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", color: "#4B6EF5" },
+  featureText: { fontSize: "0.85rem", color: "#718096", fontWeight: 500 },
 };
