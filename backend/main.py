@@ -164,15 +164,6 @@ def compare_changes_api(req: CompareChangesRequest):
         raise HTTPException(status_code=500, detail=f"compare-changes failed: {e}")
 
 
-# ==============================
-# 환자ID → PDF 매핑 & 경로 헬퍼
-# ==============================
-PATIENT_PDFS: Dict[str, str] = {
-    "25-0000032": "uploads/김x애-간호기록지.pdf",
-    # 필요 시 계속 추가
-    # "23-0000009": "uploads/장x규-간호기록지.pdf",
-}
-
 def _abs_path(rel_or_abs: str) -> str:
     """backend 기준 절대경로로 변환"""
     base = os.path.dirname(os.path.abspath(__file__))
@@ -183,7 +174,7 @@ def _abs_path(rel_or_abs: str) -> str:
 # ==============================
 @app.get("/patients/{patient_id}/nursing-notes")
 def get_nursing_notes(patient_id: str):
-    rel_path = PATIENT_PDFS.get(patient_id)
+    rel_path = db_manager.get_patient_pdf_path(patient_id)
     if not rel_path:
         raise HTTPException(status_code=404, detail=f"등록된 PDF가 없습니다: {patient_id}")
 

@@ -38,6 +38,7 @@ class DatabaseManager:
                 birth_date TEXT,
                 room_number TEXT,
                 admission_date TEXT,
+                pdf_path TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
@@ -69,9 +70,9 @@ class DatabaseManager:
         
         # 환자 정보 삽입 (환자 ID, 이름, 생년월일, 병실, 입원일)
         cursor.execute('''
-            INSERT OR IGNORE INTO patients (patient_id, name, birth_date, room_number, admission_date)
-            VALUES (?, ?, ?, ?, ?)
-        ''', ("25-0000032", "김x애", "1935-03-15", "301", "2024-01-15"))
+            INSERT OR IGNORE INTO patients (patient_id, name, birth_date, room_number, admission_date, pdf_path)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', ("25-0000032", "김x애", "1935-03-15", "301", "2024-01-15", "uploads/김x애-간호기록지.pdf"))
         
         # 사용자-환자 연결 삽입 (사용자 이메일, 환자 ID, 환자 이름, 관계)
         cursor.execute('''
@@ -146,6 +147,18 @@ class DatabaseManager:
             })
         
         return patients
+    
+    def get_patient_pdf_path(self, patient_id: str) -> Optional[str]:
+        """환자 ID로 PDF 경로 조회"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT pdf_path FROM patients WHERE patient_id = ?",
+            (patient_id,)
+        )
+        row = cursor.fetchone()
+        conn.close()
+        return row[0] if row and row[0] else None
     
     def add_user_patient(self, user_email: str, patient_id: str, patient_name: str, relationship: str = None):
         """사용자-환자 연결 추가"""
