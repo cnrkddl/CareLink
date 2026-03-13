@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthActions from "./AuthActions"; // ✅ 로그아웃/연결해제 버튼
+import NotificationBell from "./NotificationBell";
 
 export default function Header({ onFAQClick }) {
   const { pathname } = useLocation();
@@ -65,16 +66,18 @@ export default function Header({ onFAQClick }) {
             ?
           </button>
         )}
-        
+
+        <NotificationBell />
+
         {/* 사용자 프로필 정보 */}
         {userInfo && (
           <div style={styles.userProfile}>
             {/* 프로필 사진 */}
             <div style={styles.profileImage}>
               {userInfo.profile_image ? (
-                <img 
-                  src={userInfo.profile_image} 
-                  alt="프로필" 
+                <img
+                  src={userInfo.profile_image}
+                  alt="프로필"
                   style={styles.profileImg}
                 />
               ) : (
@@ -83,14 +86,14 @@ export default function Header({ onFAQClick }) {
                 </div>
               )}
             </div>
-            
+
             {/* 이메일 */}
             <span style={styles.userEmail}>
               {userInfo.email || "이메일 없음"}
             </span>
           </div>
         )}
-        
+
         {/* ✅ 오른쪽에 로그아웃/연결해제 버튼 */}
         <AuthActions />
       </div>
