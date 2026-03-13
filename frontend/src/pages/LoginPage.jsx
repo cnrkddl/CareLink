@@ -88,6 +88,28 @@ export default function LoginPage() {
             )}
           </button>
 
+          {/* 개발용 디버그 버튼 (포트폴리오 제출 전 삭제 권장) */}
+          {process.env.NODE_ENV !== "production" && (
+            <button
+              onClick={() => {
+                localStorage.setItem("debug_login", "true");
+                window.location.reload();
+              }}
+              style={{
+                marginTop: 10,
+                background: "none",
+                border: "1px dashed #ccc",
+                color: "#999",
+                fontSize: 12,
+                cursor: "pointer",
+                padding: "4px 8px",
+                borderRadius: 4
+              }}
+            >
+              [Debug] Auto Login Bypasser
+            </button>
+          )}
+
 
 
           <div style={styles.features}>

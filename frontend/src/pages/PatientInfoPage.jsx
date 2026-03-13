@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 import PatientHistoryCard from "../components/PatientHistoryCard";
+import { useNotifications } from "../context/NotificationContext";
 
 export default function PatientInfoPage() {
   const { patientId: routePatientId } = useParams();
@@ -16,6 +17,7 @@ export default function PatientInfoPage() {
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [kakaoNickname, setKakaoNickname] = useState(""); // 카카오 닉네임 상태 추가
+  const { add } = useNotifications(); // 알림 기능 가져오기
 
   // 검색 상태 (히스토리 섹션에서 사용)
   const [query, setQuery] = useState("");         // 자유 검색(키워드/내용)
@@ -72,10 +74,10 @@ export default function PatientInfoPage() {
           credentials: 'include',
         });
 
-        if (res.status === 401) {
-          window.location.href = "/";
-          return;
-        }
+        // if (res.status === 401) {
+        //   window.location.href = "/";
+        //   return;
+        // }
 
         if (!res.ok) {
           const { detail } = await res.json().catch(() => ({ detail: res.statusText }));
@@ -112,6 +114,26 @@ export default function PatientInfoPage() {
       ignore = true;
     };
   }, [API_BASE, patientId]);
+
+  // 새로운 기록 감지 및 알림 트리거
+  useEffect(() => {
+    if (loading || notes.length === 0) return;
+
+    const storageKey = `seen_records_${patientId}`;
+    const lastSeenCount = parseInt(localStorage.getItem(storageKey) || "0", 10);
+
+    if (notes.length > lastSeenCount && lastSeenCount !== 0) {
+      add({
+        title: "새로운 건강 정보",
+        message: `${patientId} 환자님의 새로운 간호기록이 업데이트되었습니다.`,
+        type: "info",
+        source: "medical_records"
+      });
+    }
+
+    // 현재 기록 개수 저장
+    localStorage.setItem(storageKey, notes.length.toString());
+  }, [notes, patientId, loading, add]);
 
   // 검색 디바운스 (250ms)
   useEffect(() => {
