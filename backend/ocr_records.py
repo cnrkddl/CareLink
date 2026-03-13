@@ -1,9 +1,14 @@
 import os
 import re
 import json
+import base64
+import io
 import pdfplumber
 from typing import Dict, List, Tuple, Optional
+from pdf2image import convert_from_path
+from PIL import Image
 from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel
@@ -64,17 +69,54 @@ def deidentify_text(text: str) -> str:
     return text
 
 # ==============================
-# Step 2: PDF 텍스트 추출 (유지)
+# Step 2: AI-powered OCR (Vision)
 # ==============================
+
+def encode_image(image: Image.Image) -> str:
+    """PIL 이미지를 base64 문자열로 변환"""
+    buffered = io.BytesIO()
+    image.save(buffered, format="JPEG")
+    return base64.b64encode(buffered.getvalue()).decode('utf-8')
+
 def extract_text_from_pdf(pdf_path: str) -> str:
-    """PDF에서 텍스트 추출 (pdfplumber)"""
-    text = ""
-    with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text += page_text + "\n"
-    return text
+    """PDF를 이미지로 변환 후 GPT-4o Vision을 사용하여 텍스트 추출 (Real OCR)"""
+    try:
+        print(f"[OCR] PDF 변환 시작: {pdf_path}")
+        # PDF의 모든 페이지를 이미지로 변환 (메모리 절약을 위해 저해상도 150 DPI)
+        images = convert_from_path(pdf_path, dpi=150)
+        
+        llm = ChatOpenAI(model="gpt-4o-mini")
+        full_text = ""
+        
+        for i, img in enumerate(images):
+            print(f"[OCR] 페이지 {i+1}/{len(images)} 처리 중...")
+            base64_image = encode_image(img)
+            
+            message = HumanMessage(
+                content=[
+                    {"type": "text", "text": "이 이미지(간호기록지)에 포함린 모든 텍스트를 가능한 정확하게 추출해서 텍스트로만 반환해줘. 추가 설명은 하지 마."},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                    },
+                ]
+            )
+            
+            response = llm.invoke([message])
+            full_text += response.content + "\n"
+        
+        print("[OCR] 모든 페이지 추출 완료")
+        return full_text
+    except Exception as e:
+        print(f"[OCR] Vision OCR 실패, 기존 pdfplumber로 시도: {e}")
+        # Fallback: 기존 정적 텍스트 추출
+        text = ""
+        with pdfplumber.open(pdf_path) as pdf:
+            for page in pdf.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+        return text
 
 # ==============================
 # Step 3: LLM 기반 파싱

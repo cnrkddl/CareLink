@@ -4,15 +4,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:8000';
 
-const handleDemoLogin = () => {
-  setLoading(true);
-  window.location.assign(`${API_BASE}/auth/demo/login`);
-};
-
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+
 
   // 1) 페이지 진입 시: ?login=success 있으면 즉시 홈으로
   useEffect(() => {
@@ -36,11 +33,11 @@ export default function LoginPage() {
           navigate("/home", { replace: true });
         }
       } catch (err) {
-        console.warn("[whoami] failed:", err);
+        console.error("Login fail processing error:", err);
       }
     })();
     return () => { alive = false; };
-  }, [navigate, API_BASE]); // ✅ API_BASE 추가
+  }, [location.search, navigate]);
 
   const handleKakaoLogin = () => {
     setLoading(true);
@@ -91,14 +88,7 @@ export default function LoginPage() {
             )}
           </button>
 
-          <button
-            onClick={handleDemoLogin}
-            style={{ ...styles.demoBtn, marginTop: 10 }}
-            disabled={loading}
-          >
-            <span style={styles.demoIcon}>👀</span>
-            <span>로그인 없이 둘러보기</span>
-          </button>
+
 
           <div style={styles.features}>
             <div style={styles.feature}>
@@ -177,14 +167,8 @@ const styles = {
     boxShadow: "0 4px 12px rgba(254, 229, 0, 0.2)",
     transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
   },
-  demoBtn: {
-    width: "100%", height: 52, borderRadius: 14, border: "1px solid rgba(0,0,0,0.1)", background: "#ffffff",
-    color: "#333", fontWeight: 700, fontSize: "16px", cursor: "pointer",
-    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-  },
-  demoIcon: { fontSize: "1.3rem" },
+
+
   loadingContent: { display: "flex", alignItems: "center", gap: 10 },
   spinner: { border: "3px solid rgba(0,0,0,0.1)", borderTop: "3px solid #000", borderRadius: "50%", width: 20, height: 20, animation: "spin 1s linear infinite" },
   btnContent: { display: "flex", alignItems: "center", gap: 8 },
